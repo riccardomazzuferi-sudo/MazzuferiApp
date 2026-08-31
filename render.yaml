@@ -1,0 +1,41 @@
+Nota: questo file (render.yaml) descrive i due servizi in modo che Render possa
+proporli automaticamente come "Blueprint" quando colleghi il repository, ma può
+anche essere ignorato: la guida passo-passo consegnata insieme al codice spiega
+come creare gli stessi due servizi a mano dal pannello di Render, che è il modo
+consigliato la prima volta per capire cosa si sta configurando.
+
+services:
+  - type: web
+    name: stampaggioscientifico-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn server:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: moldassist
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+
+  - type: web
+    name: stampaggioscientifico-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: "npm install --legacy-peer-deps && npm run build"
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

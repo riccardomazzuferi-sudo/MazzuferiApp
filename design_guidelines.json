@@ -1,0 +1,122 @@
+{
+  "theme": "dark",
+  "archetype": "Swiss & High-Contrast (Authority, Clarity, Truth) - Adapted for Industrial HMI",
+  "typography": {
+    "fonts": [
+      {
+        "family": "Chivo",
+        "usage": "Headings (H1-H4) and major section titles",
+        "weights": [700, 900],
+        "import_url": "https://fonts.googleapis.com/css2?family=Chivo:wght@700;900&display=swap"
+      },
+      {
+        "family": "IBM Plex Sans",
+        "usage": "Body text, UI labels, standard forms, table headers",
+        "weights": [400, 500, 600],
+        "import_url": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      },
+      {
+        "family": "JetBrains Mono",
+        "usage": "Numerical data, calculations, scientific molding sheet readouts, metrics",
+        "weights": [400, 700],
+        "import_url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+      }
+    ],
+    "rules": [
+      "No Inter, Roboto, Open Sans, or Lato for headings.",
+      "Metrics and calculation results must use JetBrains Mono to simulate industrial machine readouts.",
+      "Headings must use tight tracking (tracking-tight).",
+      "Overlines for data points must be uppercase, tiny, wide spacing (tracking-[0.2em])."
+    ]
+  },
+  "colors": {
+    "background": {
+      "page": "#020617",
+      "surface": "#0f172a",
+      "surface_hover": "#1e293b",
+      "surface_active": "#334155"
+    },
+    "text": {
+      "primary": "#f8fafc",
+      "secondary": "#94a3b8",
+      "disabled": "#475569"
+    },
+    "brand": {
+      "primary": "#2563eb",
+      "primary_hover": "#1d4ed8",
+      "primary_active": "#1e40af"
+    },
+    "semantic": {
+      "success": "#10b981",
+      "warning": "#f59e0b",
+      "error": "#ef4444",
+      "ai_suggestion": "#8b5cf6"
+    },
+    "border": {
+      "default": "#334155",
+      "focus": "#3b82f6"
+    },
+    "rules": [
+      "No full-screen gradients. Use flat, solid colors for a hardware/machine interface feel.",
+      "Use #8b5cf6 (violet) strictly for highlighting AI-suggested defect solutions from Claude Sonnet.",
+      "Never use teal green or teal blue (#1B93A4) as per forbidden rules for dashboards.",
+      "Always set hover text colors explicitly."
+    ]
+  },
+  "visual_enhancers": {
+    "surface_strategy": "Grid Borders (The Technical Look) - Flat solid surfaces with crisp 1px borders. Minimal rounded corners (rounded-sm or rounded-none) to mimic industrial hardware.",
+    "shadows": "Minimal to none. Rely on 1px borders (border-slate-700) to separate surfaces. If shadow is needed, use hard, small drop shadows.",
+    "glassmorphism": "Avoid in forms and data tables. Only permissible for fixed top navigation bars (bg-slate-950/80 backdrop-blur-md border-b border-slate-800)."
+  },
+  "grids_and_layouts": {
+    "dashboard": "Mode B: High Density Grid. grid-cols-1 md:grid-cols-3 lg:grid-cols-4 with gap-4 or gap-6. Direct children must be grid items.",
+    "forms": "High-density data forms (Scientific Molding Calculator) must be multi-column on desktop (md:grid-cols-2 lg:grid-cols-3) to fit tablet view efficiently without excessive scrolling.",
+    "spacing": "Industrial UI requires clear separation but dense data. Use p-4 to p-6 for card internals, but allow dense tables (p-2).",
+    "alignment": "Data columns right-aligned for numbers, left-aligned for text. Labels above inputs for faster scanning on tablets."
+  },
+  "motion": {
+    "strategy": "Minimalist and precise. Industrial tools should feel immediate.",
+    "rules": [
+      "Use short duration color transitions: transition-colors duration-150.",
+      "No bouncy spring animations or slow parallax.",
+      "Micro-interactions on hover (bg color shift) for table rows and buttons.",
+      "Respect prefers-reduced-motion."
+    ]
+  },
+  "accessibility": {
+    "contrast": "Must meet minimum 4.5:1 for standard text. Warning (Amber) and Error (Red) must be readable against dark slate.",
+    "touch_targets": "Minimum 40x40px for all interactive elements to support tablet usage on the factory floor (use h-10 or h-12 for inputs/buttons).",
+    "testing": "All interactive and key informational elements MUST include a `data-testid` attribute (e.g., `data-testid=\"login-submit-button\"`)."
+  },
+  "component_instructions": {
+    "general": "Use pure HTML/Tailwind for main layout structures. Heavily customize Shadcn components to match the flat, industrial slate aesthetic.",
+    "buttons": "Flat, sharp corners (rounded-sm). Action buttons (blue), Destructive (red). Use solid colors, no gradients.",
+    "cards": "Remove default soft shadows from Shadcn Cards. Use bg-slate-900 border border-slate-800 rounded-sm.",
+    "inputs": "bg-slate-950 border-slate-700 rounded-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500. Height must be h-10 min for tablet touch.",
+    "tables": "Shadcn Table. Dense styling. Hover rows should be bg-slate-800. Header text uppercase, tracking-wider, text-slate-400.",
+    "icons": "Use Phosphor Icons (@phosphor-icons/react) for dense, technical dashboard look.",
+    "toasts": "Use 'sonner' for toast notifications (success/error feedback).",
+    "charts": "If needed for molding parameters overtime, use Shadcn Charts (Recharts). Color blind friendly palettes."
+  },
+  "media": {
+    "images": [
+      {
+        "category": "login_background",
+        "url": "https://images.unsplash.com/photo-1717386255767-52643970d483?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDF8MHwxfHNlYXJjaHwzfHxtYW51ZmFjdHVyaW5nJTIwZmFjdG9yeSUyMGZsb29yfGVufDB8fHx8MTc4NzgzMzA2M3ww&ixlib=rb-4.1.0&q=85",
+        "description": "Factory with machines, used for the left or right panel of the login screen to establish industrial context."
+      }
+    ],
+    "rules": [
+      "Do not use placeholder image services.",
+      "Images should have a dark overlay (bg-slate-950/60) so they don't overpower the UI."
+    ]
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You MUST NOT apply universal transition (e.g., transition: all). Add transitions for specific properties.",
+    "You MUST NOT center align the app container. No .App { text-align: center; }.",
+    "NEVER use AI assistant Emoji characters (🤖🧠💭💡🔮🎯) for icons. Use Phosphor Icons.",
+    "Prioritize pre-existing components from src/components/ui.",
+    "Industrial aesthetic: keep corners sharp, borders distinct, and contrast high.",
+    "Create new components matching the style of existing ones."
+  ]
+}

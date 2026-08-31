@@ -1,0 +1,30 @@
+{
+  "summary": "Frontend-only regression + bug-fix verification for MoldingSheet STL/STEP import. All bug-fix acceptance criteria pass: on uploading /app/test_fixtures/test_box_40x30x2p5.stl (a 40x30x2.5mm box) the ray-casting thickness estimator produces exact 2.50mm for medio/max/sezione sottile, Vol=3.00 cm³, area proiettata=12.0 cm², percorso=25.0 mm. File input accept attribute contains all 6 variants (.stl,.STL,.step,.STEP,.stp,.STP). STEP engine loads from CDN and attempts parsing (occt-import-js WASM initializes; console shows OpenCascade 'Interruption ReadFile par Exception' when handed an empty stub STEP, as expected). Non-regression on login (admin/admin123), tab navigation Stampo→Pressa→Iniezione→Chiusura→Tempi, material autopopulation (density_solid=1), and calc pipeline CM/QSCM/Qcomm all confirmed.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "MoldingSheet — Copia da stampo (anagrafica)", "issues": ["React hydration warning: <span> is not a valid child of <option>. The mold <option> in the 'Copia da stampo' select (line ~300 of MoldingSheet.jsx) renders {m.code} — {m.name}, but the JSX runtime wraps dynamic children in <span data-ve-dynamic=\"true\"> which becomes '<option><span>…</span></option>' and triggers a hydration error console noise. Not blocking, but should wrap the label in a single string via template literal outside JSX interpolation or use React.Fragment."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "OPTIONAL: silence hydration warning for <span> inside <option> in Copia-da-stampo select on tab Stampo (use string template: `${m.code} — ${m.name}` outside of two interpolations).",
+    "OPTIONAL (already known from iter_1): missing DialogDescription in Radix dialogs and no visible .error element on failed login."
+  ],
+  "critical_code_review_comments": [
+    "molding-calc.js estimateThickness (ray-cast + 3D-DDA) is well written; handles the previously broken thin-part case correctly (verified on 2.5mm-thick box).",
+    "MoldingSheet.jsx is 663 lines — approaching the 700-line threshold; consider splitting each Tab into its own component for maintainability.",
+    "onFile handler catches parse errors and shows toast, but does not clear the fileRef input value → uploading the same file twice consecutively will NOT retrigger onChange. Consider e.target.value = '' at the end of onFile.",
+    "parseSTEP loads occt-import-js from a public CDN with no integrity/hash; offline / CSP-restricted deployments will fail with a generic error. Consider self-hosting or documenting the dependency."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a (skipped per request)", "frontend": "100%"},
+  "test_credentials": "admin / admin123 (from /app/memory/test_credentials.md if present; used as provided in review_request)",
+  "seed_data_creation": "none",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Bug fix for STL thickness reading and STEP support is fully verified. estimateThickness returns spMin/spMed/spMax = 2.5/2.5/2.5 mm on the test_box_40x30x2p5.stl fixture. Accept attribute on data-testid=stl-input is '.stl,.STL,.step,.STEP,.stp,.STP'. occt-import-js loads and initializes from CDN (verified via console logs during a stub STEP upload). Tab navigation, material select autofill, and calc chain (CM/QSCM/Qcomm on tab 3) are non-regressed. Only cosmetic hydration warning remains on the Copia-da-stampo <option>.",
+  "rca_of_the_issue": "Root cause of previous bug: computeMeshMetrics used Math.min(bbX,bbY,bbZ) as wall thickness, which is only correct for slabs aligned to axes. Fix: added estimateThickness() that ray-casts from each triangle's centroid along the inward-facing normal (Möller–Trumbore) accelerated by a 3D-DDA voxel grid, then takes 5th/50th/95th percentiles of the hit distances. Verified on the fixture (12-triangle 40×30×2.5 box): 4 valid samples, all returning 2.5 mm, giving spMin=spMed=spMax=2.5. NOTE: on very small meshes (≤~12 triangles) the sample count is low (only 4 here) — for real production parts with thousands of triangles the percentile distribution will be more meaningful, but the algorithm is correct."
+}

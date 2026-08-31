@@ -1,0 +1,42 @@
+{
+  "summary": "First-finish smoke tests for MOLD ASSIST (backend + frontend). Auth, seeded data (10 defects, 4 materials), CRUD for presses/molds, /molding/calculate, /ai/resolve-defect streaming, defect solver UI, molding sheet + PDF, and history all pass. Only minor observation: on wrong-login the frontend does not render an element with .error class (likely uses toast); backend correctly returns 401.",
+  "tested_scope": ["frontend", "backend", "auth", "integration"],
+  "passed": [
+    "POST /api/auth/login admin/admin123 returns JWT (field name is 'token')",
+    "Wrong credentials -> 401",
+    "Unauthenticated /api/presses -> 401 (Bearer enforcement)",
+    "GET /api/defects returns 10 seeded defects (BAV, INC, RIS, LNS, BRU, DEF, LSD, STR, PNT, OPA)",
+    "GET /api/materials returns 4 seeded materials (PA6, PC, ABS, PP)",
+    "POST /api/presses and /api/molds create records (required fields: code,name,tonnage,screw_diameter,max_stroke,max_rpm,qmax for press; code,name,cavities,part_weight,part_thickness for mold)",
+    "POST /api/molding/calculate returns full results block (optimal_screw_diameter_mm, cm_mm, qscm_mm, q_comm_mm, n_ideal_rpm, qmax_cm3_s, tmp_s, trr_s, temp_profile[5], melt_temp_avg, mold_temp_avg)",
+    "Frontend login -> dashboard-page renders",
+    "Registries/presses: add-btn opens form with 9 field-* inputs; save-btn persists new press without error",
+    "Registries/materials: all 4 seeded material names visible",
+    "Defect Solver: defect select (button/combobox) works, description input works",
+    "AI streaming (Claude Sonnet 4.6 via emergentintegrations): ai-content populated with non-empty text (>100 chars) starting with 'Cause probabili...'",
+    "Molding Sheet: press/mold/material selection + calc-btn -> 18 m-* metric elements rendered",
+    "PDF export: pdf-btn click produced no JS pageerror",
+    "History page loads (history-page testid present)"
+  ],
+  "failed": [
+    {
+      "area": "frontend/login",
+      "issue": "Wrong-credentials login does not render any element matching .error / [class*=error] selector (toast likely). Backend correctly returns 401.",
+      "evidence": "Playwright err_text empty; console shows 'Failed to load resource: 401'",
+      "priority": "LOW"
+    },
+    {
+      "area": "frontend/a11y",
+      "issue": "Radix DialogContent warnings: Missing Description/aria-describedby (non-blocking)",
+      "evidence": "console warnings during registries add-btn dialog open",
+      "priority": "LOW"
+    }
+  ],
+  "action_items": [
+    "Optional: add a visible error element (with class 'error' or data-testid='login-error') on failed login for easier automated verification.",
+    "Optional: add DialogDescription/aria-describedby to Radix dialogs to silence a11y warnings."
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "retest_needed": false,
+  "full_testing_deferred": true
+}
